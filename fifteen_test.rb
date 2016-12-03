@@ -2,14 +2,14 @@ require './spec_helper.rb'
 
 RSpec.describe Fifteen do
   before(:each) do
-    @fifteen = Fifteen.new([5, 3, 11, 8, 15, 10, 2, 6, "_", 14, 9, 7, 4, 13, 1, 12])
+    @fifteen = Fifteen.new([5, 3, 11, 8, 15, 10, 2, 6, " ", 14, 9, 7, 4, 13, 1, 12])
   end
 
   describe "#inspect" do
     it "should be" do
       expect(@fifteen.inspect).to eq %Q( 5  3 11  8
 15 10  2  6
- _ 14  9  7
+   14  9  7
  4 13  1 12)
     end
   end
@@ -67,6 +67,11 @@ RSpec.describe Fifteen do
       puts
       puts @fifteen.slide!(3,0).inspect
       puts
+    end
+
+    it "should work 1" do
+      @fifteen = Fifteen.new([1, 15,  7, 13, 5, ' ', 4,  2, 10,  6,  9,  3, 12, 14,  8, 11])
+      expect(@fifteen.slide!(1, 2)).not_to eq(@fifteen)
     end
   end
 end

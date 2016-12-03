@@ -18,14 +18,17 @@ Telegram::Bot::Client.run(ENV['BOT_TOKEN']) do |bot|
         changed_fifteen = fifteen.slide!(row, col) 
         puts
         puts changed_fifteen.inspect
-        @games[message.from.id][message.message.message_id] = changed_fifteen
-        kb = changed_fifteen.field.map.with_index do |row, row_index|
-          row.map.with_index do |number, col_index|
-            Telegram::Bot::Types::InlineKeyboardButton.new(text: number, callback_data: [row_index, col_index].join(","))
+        puts (changed_fifteen.field == fifteen.field)
+        unless (changed_fifteen.field == fifteen.field) 
+          @games[message.from.id][message.message.message_id] = changed_fifteen
+          kb = changed_fifteen.field.map.with_index do |row, row_index|
+            row.map.with_index do |number, col_index|
+              Telegram::Bot::Types::InlineKeyboardButton.new(text: number, callback_data: [row_index, col_index].join(","))
+            end
           end
+          markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
+          bot.api.editMessageReplyMarkup(chat_id: message.from.id, message_id: message.message.message_id, reply_markup: markup)
         end
-        markup = Telegram::Bot::Types::InlineKeyboardMarkup.new(inline_keyboard: kb)
-        bot.api.editMessageReplyMarkup(chat_id: message.from.id, message_id: message.message.message_id, reply_markup: markup)
       end
     when Telegram::Bot::Types::Message
       if message.text == '/start'

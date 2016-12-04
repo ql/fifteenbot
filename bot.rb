@@ -1,24 +1,22 @@
 require 'telegram/bot'
 require './fifteen.rb'
 
+# TODO
+# * перенести хранение игр в Redis (заодно уберем потенциальную утечку памяти)
+# * добавить проверку на выигрышную комбинацию
+# * добавить демонизацию и логгинг
+# * правильное обращение с эксепшнами
+
 Telegram::Bot::Client.run(ENV['BOT_TOKEN']) do |bot|
   bot.listen do |message|
   @games ||= {}
   case message
     when Telegram::Bot::Types::CallbackQuery
       row, col = message.data.split(',').map(&:to_i)
-      puts message.data
-      puts @games.inspect
-      puts message.from.id
-      puts message.message.message_id
 
       fifteen = @games.fetch(message.from.id, {})[message.message.message_id]
       if fifteen
-        puts fifteen.inspect
         changed_fifteen = fifteen.slide!(row, col) 
-        puts
-        puts changed_fifteen.inspect
-        puts (changed_fifteen.field == fifteen.field)
         unless (changed_fifteen.field == fifteen.field) 
           @games[message.from.id][message.message.message_id] = changed_fifteen
           kb = changed_fifteen.field.map.with_index do |row, row_index|
